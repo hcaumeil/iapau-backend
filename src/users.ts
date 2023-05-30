@@ -1,7 +1,7 @@
 import Controller from "./controller.js";
 import { Request, Response, Router } from "express";
 import pg_client from "./pg"
-//import { sha256 } from "js-sha256";
+import { sha256 } from "js-sha256";
 
 
 class UsersController implements Controller {
@@ -11,6 +11,8 @@ class UsersController implements Controller {
   constructor() {
     this.router = new Router();
     this.router.get(UsersController.path, this.get);
+    this.router.post(UsersController.path,this.post);
+    this.router.get(UsersController.path+"/:id",this.get_user);
   }
 
   async get(req: Request, res: Response) {
@@ -38,88 +40,53 @@ class UsersController implements Controller {
       res.status(500).send();
     }
   }
-  // static async post_new(request: Request, res: Response, id?: number) {
-  //   try {
-  //     const { email, surname, name, password, study_level, town, school } =
-  //       await request.body.json();
-  //     if (
-  //       !email || !surname || !name || !password || !study_level || !town ||
-  //       !school
-  //     ) {
-  //       res.status(400).send("One or more attribute is undefined")
-  //     }
-  //     const checkEmailQuery =
-  //       `SELECT COUNT(*) FROM users WHERE email = '${email}';`;
-  //     const emailResult = await pg_client.query(checkEmailQuery);
-  //     const emailCount = emailResult.rows[0].count;
-  
-  //     if (emailCount > 0) {
-  //       res.status(400).send("Email already taken")
-  //     }
-  //     const salt = generateRandomString(16);
-  //     const hashed_password = sha256(password + salt);
-  //     const role = "user";
-  //     const result = await pg_client.query(
-  //       "INSERT INTO users (email,surname,name,password,salt,level,study_level,town,school,role) VALUES('" +
-  //         email + "','" + surname + "','" + name + "','" + hashed_password +
-  //         "','" + salt + "',0,'" + study_level + "','" + town + "','" + school +
-  //         "','" + role + "');",
-  //     );
-  //     if (result.rowCount > 0) {
-  //       res.status(200).send("User created")
-  //     }
-  //     throw error(401, {
-  //       message: "Informations not valid",
-  //     });
-  //   } catch (error) {
-  //     console.error("Error fetching user table:", error);
-  //     return new Response(JSON.stringify({
-  //       error: "Internal Server Error",
-  //     }));
-  //   }
-  //   let sql;
-  //   let data;
-  //   const db = new Database("asimov.db");
-  //   const exist = await this.exist_email(p.email);
-  //   if (exist) {
-  //     res.status(400).send();
-  //     return;
-  //   }
 
-  //   if (typeof id !== "undefined") {
-  //     res.status(400).send();
-  //     return;
-  //   } else {
-  //     sql = "INSERT INTO user VALUES(?,?,?,?,?)";
-  //     data = [
-  //       p.name,
-  //       p.family_name,
-  //       p.email,
-  //       p.password,
-  //       p.basket,
-  //     ];
-  //   }
-
-  //   let e;
-  //   db.run(sql, data, (err) => e = err);
-  //   if (e) {
-  //     console.log(
-  //       "[ERROR][POST] sql error " + UserController.path + " : " +
-  //         JSON.stringify(p),
-  //     );
-  //     console.error(e.message);
-  //     res.status(500).send();
-  //     return;
-  //   }
-  //   db.close();
-
-  //   console.log(
-  //     "[INFO][POST] data added on " + UserController.path + " : " +
-  //       JSON.stringify(p),
-  //   );
-  //   res.status(200).send();
-  // }
+  async post(request: Request, res: Response) {
+    try {
+      const { email, surname, name, password, study_level, town, school } = await request.body;
+      if (
+        !email || !surname || !name || !password || !study_level || !town ||
+        !school
+      ) {
+        res.status(400).send("One or more attribute is undefined")
+      }else{
+        const checkEmailQuery =`SELECT COUNT(*) FROM users WHERE email = '${email}';`;
+        const emailResult = await pg_client.query(checkEmailQuery);
+        const emailCount = emailResult.rows[0].count;
+        if (emailCount > 0) {
+          res.status(400).send("Email already taken")
+        }else{
+          const salt = generateRandomString(16);
+          const hashed_password = sha256(password + salt);
+          const role = "user";
+          const result = await pg_client.query(
+            "INSERT INTO users (email,surname,name,password,salt,level,study_level,town,school,role) VALUES('" +
+              email + "','" + surname + "','" + name + "','" + hashed_password +
+              "','" + salt + "',0,'" + study_level + "','" + town + "','" + school +
+              "','" + role + "');",
+          );
+          if (result.rowCount > 0) {
+            res.status(200).send("User created")
+          }else{
+            res.status(401).send("Informations not valid")
+          }
+        }
+      }
+    } catch (error) {
+      res.status(500).send("Informations not valid")
+    }
+  }
+  async get_user(req: Request, res: Response) {
+    try {  
+      const result = await pg_client.query("SELECT * FROM users where id='"+req.params.id+"';");
+      const users = result.rows;
+      res.status(200).send(JSON.stringify(users));
+    } catch (error) {
+      res.status(500).send();
+    }
+  }
 }
+
 function generateRandomString(length: number) {
   let result = "";
   const characters =
@@ -134,50 +101,3 @@ function generateRandomString(length: number) {
 }
 
 export default UsersController;
-
-class User {
-  name: string;
-  family_name: string;
-  email: string;
-  password: string;
-  basket: string;
-
-  constructor(
-    name: string,
-    family_name: string,
-    email: string,
-    password: string,
-    basket: string,
-  ) {
-    this.name = name;
-    this.family_name = family_name;
-    this.email = email;
-    this.password = password;
-    this.basket = basket;
-  }
-}
-
-class UserEntry {
-  id: number;
-  name: string;
-  family_name: string;
-  email: string;
-  password: string;
-  basket: string;
-
-  constructor(
-    id: number,
-    name: string,
-    family_name: string,
-    email: string,
-    password: string,
-    basket: string,
-  ) {
-    this.id = id;
-    this.name = name;
-    this.family_name = family_name;
-    this.email = email;
-    this.password = password;
-    this.basket = basket;
-  }
-}
