@@ -9,12 +9,7 @@ class LoginController implements Controller {
 
   constructor() {
     this.router = new Router();
-    this.router.get(LoginController.path, this.get);
     this.router.post(LoginController.path,this.post);
-  }
-
-  async get(req: Request, res: Response) {
-    res.status(404).send(JSON.stringify({ error: "Method get not allowed" }));
   }
 
   async post(request: Request, res: Response) {
