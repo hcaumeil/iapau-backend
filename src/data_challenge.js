@@ -26,19 +26,19 @@ class DataChallengeController {
 
   async post(request, res) {
     try {
-        const { name, begin_date, end_date } = await request.body;
-        if (!name || !begin_date || !end_date) {
-            res.status(401).send("One or more attribute is undefined")
+        const { name, description, begin_date, end_date } = await request.body;
+        if (!name || !description || !begin_date || !end_date) {
+            res.status(400).send("One or more attribute is undefined")
         }else{
             const result = await pg_client.query(
-                "INSERT INTO data_challenge (name,begin_date,end_date) VALUES('" + name +
+                "INSERT INTO data_challenge (name,description,begin_date,end_date) VALUES('" + name + ",'"+ description + "',"
                 "',TO_DATE('" + begin_date + "', 'DD-MM-YYYY'),TO_DATE('" + end_date +
                 "', 'DD-MM-YYYY'));",
             );  
             if (result.rowCount > 0) {
                 res.status(200).send("Data challenge created")
             }else{
-                res.status(401).send("Invalid informations")
+                res.status(400).send("Invalid informations")
             }
         }
     } catch (error) {
