@@ -40,6 +40,7 @@ class App {
       };
 
       this.app.use("/", express.static("public/", option));
+      this.app.use("/account", express.static("public/account", option));
     });
   }
 }
