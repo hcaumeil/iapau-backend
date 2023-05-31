@@ -25,7 +25,6 @@ class UsersController implements Controller {
           `SELECT COUNT(*) FROM users WHERE email = '${mail}';`;
         const emailResult = await pg_client.query(checkEmailQuery);
         const emailCount = emailResult.rows[0].count;
-        const role = "user";
         if (emailCount > 0) {
           res.status(404).send("Email already taken");
 
@@ -45,10 +44,10 @@ class UsersController implements Controller {
 
   async post(request: Request, res: Response) {
     try {
-      const { email, surname, name, password, study_level, town, school } = await request.body;
+      const { email, surname, name, password, study_level, town, school, role } = await request.body;
       if (
-        !email || !surname || !name || !password || !study_level || !town ||
-        !school
+        !email || !surname || !name || !password || !study_level || !town || 
+        !school || !role
       ) {
         res.status(400).send("One or more attribute is undefined")
       }else{
@@ -60,7 +59,6 @@ class UsersController implements Controller {
         }else{
           const salt = generateRandomString(16);
           const hashed_password = sha256(password + salt);
-          const role = "user";
           const result = await pg_client.query(
             "INSERT INTO users (email,surname,name,password,salt,level,study_level,town,school,role) VALUES('" +
               email + "','" + surname + "','" + name + "','" + hashed_password +
