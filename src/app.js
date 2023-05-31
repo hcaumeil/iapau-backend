@@ -1,5 +1,5 @@
 import cors from "cors";
-import path from "path"
+import path from "path";
 import express from "express";
 import bodyParser from "body-parser";
 
@@ -39,8 +39,8 @@ class App {
         index: ["index.html"],
       };
 
+      this.app.use("/account/", express.static("public/account/", option));
       this.app.use("/", express.static("public/", option));
-      this.app.use("/account", express.static("public/account", option));
     });
   }
 }
