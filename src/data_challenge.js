@@ -35,7 +35,7 @@ class DataChallengeController {
       } else {
         const result = await pg_client.query(
           "INSERT INTO data_challenge (name,description,begin_date,end_date) VALUES('" +
-            name + "','" + description + "'," +
+            name + "','" + description +
             "',TO_DATE('" + begin_date + "', 'DD-MM-YYYY'),TO_DATE('" +
             end_date +
             "', 'DD-MM-YYYY'));",
