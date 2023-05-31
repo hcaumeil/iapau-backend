@@ -39,7 +39,6 @@ class App {
         index: ["index.html"],
       };
 
-      this.app.use("/account/", express.static("public/account/", option));
       this.app.use("/", express.static("public/", option));
     });
   }
