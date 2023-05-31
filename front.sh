@@ -21,6 +21,3 @@ cd ..
 rm -fr iapau-site
 cp -r build/* .
 rm -fr build
-rm -fr front
-cp img/* ../img/.
-rm -fr img
