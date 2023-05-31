@@ -1,10 +1,9 @@
-import Controller from "./controller.js";
-import { Request, Response, Router } from "express";
+import { Router } from "express";
 import pg_client from "./pg.js"
 
-class DataChallengeController implements Controller {
+class DataChallengeController {
   static path = "/data_challenge";
-  router: Router;
+  router;
 
   constructor() {
     this.router = new Router();
@@ -15,7 +14,7 @@ class DataChallengeController implements Controller {
     this.router.post(DataChallengeController.path+"/:id",this.modify);
   }
 
-  async get(req: Request, res: Response) {
+  async get(req, res) {
     try {
         const result = await pg_client.query("SELECT * FROM data_challenge");
         const data_challengeJson = JSON.stringify(result.rows);
@@ -25,7 +24,7 @@ class DataChallengeController implements Controller {
     }
   }
 
-  async post(request: Request, res: Response) {
+  async post(request, res) {
     try {
         const { name, begin_date, end_date } = await request.body;
         if (!name || !begin_date || !end_date) {
@@ -47,7 +46,7 @@ class DataChallengeController implements Controller {
     }
   }
 
-  async get_data_challenge(req: Request, res: Response) {
+  async get_data_challenge(req , res) {
     try {  
       const result = await pg_client.query("SELECT * FROM data_challenge where id='"+req.params.id+"';");
       const data_challenge = result.rows;
@@ -57,7 +56,7 @@ class DataChallengeController implements Controller {
     }
   }
   
-  async modify(req: Request, res: Response) {
+  async modify(req, res) {
     try {      
         const data = await req.body;
         let query = "UPDATE data_challenge Set ";
@@ -82,7 +81,7 @@ class DataChallengeController implements Controller {
     }
   }
 
-  async delete(req: Request, res: Response) {
+  async delete(req, res) {
     try {  
       const result = await pg_client.query("DELETE FROM data_challenge where id='"+req.params.id+"';");
       if(result.rowCount>0){

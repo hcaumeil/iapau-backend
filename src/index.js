@@ -1,4 +1,4 @@
-import App from "./app.ts";
+import App from "./app.js";
 import TeamController from "./team.js";
 import DataChallengeController from "./data_challenge.js";
 import UsersController from "./users.js";

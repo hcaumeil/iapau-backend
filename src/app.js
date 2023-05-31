@@ -1,38 +1,33 @@
 import cors from "cors";
+import path from "path"
 import express from "express";
-import path from "path";
-import { Request, Response } from "express";
-import * as bodyParser from "body-parser";
-
-import Controller from "./controller.ts";
+import bodyParser from "body-parser";
 
 class App {
   app = express();
-  public port: number;
-  private controllers: Controller[];
+  port;
+  controllers;
 
-  constructor(controllers: Controller[], port: number) {
+  constructor(controllers, port) {
     this.port = port;
     this.controllers = controllers;
 
-    this.app.get("/ping", (_req: Request, res: Response) => res.send("PONG !"));
+    this.app.get("/ping", (_req, res) => res.send("PONG !"));
     this.initializeMiddlewares();
     this.initializeControllers(this.controllers);
   }
 
-  private initializeMiddlewares() {
+  initializeMiddlewares() {
     // Authorizing request from everywhere
     this.app.use(cors());
 
     this.app.use(bodyParser.json());
 
     this.app.use(bodyParser.urlencoded({ extended: true }));
-
-    this.app.use("/files", express.static("files"));
   }
 
-  private initializeControllers(controllers: Controller[]) {
-    controllers.forEach((controller: Controller) => {
+  initializeControllers(controllers) {
+    controllers.forEach((controller) => {
       this.app.use("/api", controller.router);
     });
   }

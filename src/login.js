@@ -1,18 +1,17 @@
-import Controller from "./controller.js";
-import { Request, Response, Router } from "express";
-import pg_client from "./pg"
+import { Router } from "express";
+import pg_client from "./pg.js"
 import { sha256 } from "js-sha256";
 
-class LoginController implements Controller {
+class LoginController {
   static path = "/login";
-  router: Router;
+  router;
 
   constructor() {
     this.router = new Router();
     this.router.post(LoginController.path,this.post);
   }
 
-  async post(request: Request, res: Response) {
+  async post(request, res) {
     try {
         const { password, login } = await request.body;
     
@@ -24,7 +23,7 @@ class LoginController implements Controller {
           result.rowCount > 0 &&
           sha256(password + result.rows[0].salt) == result.rows[0].password
         ) {
-          res.status(200).send(JSON.stringify({valid: "True"}));
+            res.status(200).send(JSON.stringify({valid: "True"}));
         } else {
             res.status(401).send(JSON.stringify({ error: "Wrong Login or password" }));
         }

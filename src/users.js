@@ -1,12 +1,11 @@
-import Controller from "./controller.js";
-import { Request, Response, Router } from "express";
-import pg_client from "./pg"
+import { Router } from "express";
+import pg_client from "./pg.js"
 import { sha256 } from "js-sha256";
 
 
-class UsersController implements Controller {
+class UsersController  {
   static path = "/user";
-  router: Router;
+  router;
 
   constructor() {
     this.router = new Router();
@@ -17,7 +16,7 @@ class UsersController implements Controller {
     this.router.post(UsersController.path+"/:id",this.modify);
   }
 
-  async get(req: Request, res: Response) {
+  async get(req, res) {
     try {
       const mail = req.headers["email"];
       if (mail) {
@@ -42,7 +41,7 @@ class UsersController implements Controller {
     }
   }
 
-  async post(request: Request, res: Response) {
+  async post(request, res) {
     try {
       const { email, surname, name, password, study_level, town, school, role } = await request.body;
       if (
@@ -77,7 +76,7 @@ class UsersController implements Controller {
     }
   }
 
-  async get_user(req: Request, res: Response) {
+  async get_user(req, res) {
     try {  
       const result = await pg_client.query("SELECT * FROM users where id='"+req.params.id+"';");
       const users = result.rows;
@@ -87,7 +86,7 @@ class UsersController implements Controller {
     }
   }
 
-  async delete(req: Request, res: Response) {
+  async delete(req, res) {
     try {  
       const result = await pg_client.query("DELETE FROM users where id='"+req.params.id+"';");
       if(result.rowCount>0){
@@ -100,7 +99,7 @@ class UsersController implements Controller {
       }
   }
 
-  async modify(req: Request, res: Response) {
+  async modify(req, res) {
     try {      
       const data = await req.body;
       let query = "UPDATE users Set ";
@@ -127,7 +126,7 @@ class UsersController implements Controller {
   }
 }
 
-function generateRandomString(length: number) {
+function generateRandomString(length) {
   let result = "";
   const characters =
     "*$&é(-è_çà)ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
