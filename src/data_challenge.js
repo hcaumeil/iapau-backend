@@ -31,7 +31,7 @@ class DataChallengeController {
             res.status(400).send("One or more attribute is undefined")
         }else{
             const result = await pg_client.query(
-                "INSERT INTO data_challenge (name,description,begin_date,end_date) VALUES('" + name + ",'"+ description + "',"
+                "INSERT INTO data_challenge (name,description,begin_date,end_date) VALUES('" + name + ",'"+ description + "',"+ 
                 "',TO_DATE('" + begin_date + "', 'DD-MM-YYYY'),TO_DATE('" + end_date +
                 "', 'DD-MM-YYYY'));",
             );  
