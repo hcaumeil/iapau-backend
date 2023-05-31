@@ -1,19 +1,18 @@
 import { Router } from "express";
-import pg_client from "./pg.js"
+import pg_client from "./pg.js";
 import { sha256 } from "js-sha256";
 
-
-class UsersController  {
+class UsersController {
   static path = "/user";
   router;
 
   constructor() {
     this.router = new Router();
     this.router.get(UsersController.path, this.get);
-    this.router.post(UsersController.path,this.post);
-    this.router.get(UsersController.path+"/:id",this.get_user);
-    this.router.delete(UsersController.path+"/:id",this.delete);
-    this.router.post(UsersController.path+"/:id",this.modify);
+    this.router.post(UsersController.path, this.post);
+    this.router.get(UsersController.path + "/:id", this.get_user);
+    this.router.delete(UsersController.path + "/:id", this.delete);
+    this.router.post(UsersController.path + "/:id", this.modify);
   }
 
   async get(req, res) {
@@ -26,11 +25,10 @@ class UsersController  {
         const emailCount = emailResult.rows[0].count;
         if (emailCount > 0) {
           res.status(404).send("Email already taken");
-
         } else {
           res.status(200).send("Email can be taken");
         }
-      } else {  
+      } else {
         const result = await pg_client.query("SELECT * FROM users");
         const usersJson = JSON.stringify(result.rows);
         res.send(usersJson);
@@ -43,42 +41,55 @@ class UsersController  {
 
   async post(request, res) {
     try {
-      const { email, surname, name, password, study_level, town, school, role } = await request.body;
+      const {
+        email,
+        surname,
+        name,
+        password,
+        study_level,
+        town,
+        school,
+        role,
+      } = await request.body;
       if (
-        !email || !surname || !name || !password || !study_level || !town || 
+        !email || !surname || !name || !password || !study_level || !town ||
         !school || !role
       ) {
-        res.status(400).send("One or more attribute is undefined")
-      }else{
-        const checkEmailQuery =`SELECT COUNT(*) FROM users WHERE email = '${email}';`;
+        res.status(400).send("One or more attribute is undefined");
+      } else {
+        const checkEmailQuery =
+          `SELECT COUNT(*) FROM users WHERE email = '${email}';`;
         const emailResult = await pg_client.query(checkEmailQuery);
         const emailCount = emailResult.rows[0].count;
         if (emailCount > 0) {
-          res.status(400).send("Email already taken")
-        }else{
+          res.status(400).send("Email already taken");
+        } else {
           const salt = generateRandomString(16);
           const hashed_password = sha256(password + salt);
           const result = await pg_client.query(
             "INSERT INTO users (email,surname,name,password,salt,level,study_level,town,school,role) VALUES('" +
               email + "','" + surname + "','" + name + "','" + hashed_password +
-              "','" + salt + "',0,'" + study_level + "','" + town + "','" + school +
+              "','" + salt + "',0,'" + study_level + "','" + town + "','" +
+              school +
               "','" + role + "');",
           );
           if (result.rowCount > 0) {
-            res.status(200).send("User created")
-          }else{
-            res.status(401).send("Informations not valid")
+            res.status(200).send("User created");
+          } else {
+            res.status(401).send("Informations not valid");
           }
         }
       }
     } catch (error) {
-      res.status(500).send("Informations not valid")
+      res.status(500).send("Informations not valid");
     }
   }
 
   async get_user(req, res) {
-    try {  
-      const result = await pg_client.query("SELECT * FROM users where id='"+req.params.id+"';");
+    try {
+      const result = await pg_client.query(
+        "SELECT * FROM users where id='" + req.params.id + "';",
+      );
       const users = result.rows;
       res.status(200).send(JSON.stringify(users));
     } catch (error) {
@@ -87,41 +98,46 @@ class UsersController  {
   }
 
   async delete(req, res) {
-    try {  
-      const result = await pg_client.query("DELETE FROM users where id='"+req.params.id+"';");
-      if(result.rowCount>0){
+    try {
+      const result = await pg_client.query(
+        "DELETE FROM users where id='" + req.params.id + "';",
+      );
+      if (result.rowCount > 0) {
         res.status(200).send(JSON.stringify("User deleted"));
-      }else{
+      } else {
         res.status(400).send("Wrong id");
-      }
-      } catch (error) {
-        res.status(500).send();
-      }
-  }
-
-  async modify(req, res) {
-    try {      
-      const data = await req.body;
-      let query = "UPDATE users Set ";
-      if(!data){
-        res.status(400).send("No attributes to modify");
-      }else{
-        Object.entries(data).forEach(([key, value]) => {
-          query = query.concat(key+"='"+value+"',");
-          console.log(key + " , value : "+value);
-        });
-        query = query.slice(0, -1);
-        query = query.concat("WHERE id = '"+req.params.id+"';" );
-        console.log(query)
-        const result = await pg_client.query(query);
-        if(result.rowCount>0){
-          res.status(200).send(JSON.stringify("User modified"));
-        }else{
-          res.status(400).send("Informations not valid");
-        }
       }
     } catch (error) {
       res.status(500).send();
+    }
+  }
+
+  async modify(req, res) {
+    try {
+      const data = await req.body;
+      let query = "UPDATE users Set ";
+      if (!data) {
+        res.status(400).send("No attributes to modify");
+      } else {
+        Object.entries(data).forEach(([key, value]) => {
+          query = query.concat(key + "='" + value + "',");
+        });
+        query = query.slice(0, -1);
+        query = query.concat("WHERE id = '" + req.params.id + "';");
+        const result = await pg_client.query(query);
+        if (result.rowCount > 0) {
+          res.status(200).send(JSON.stringify("User modified"));
+          console.log("[POST][200] /user/" + req.params.id + " data : " + data);
+        } else {
+          res.status(400).send("Informations not valid");
+          console.log("[POST][400] /user/" + req.params.id + " data : " + data);
+        }
+      }
+    } catch (error) {
+      console.log(
+        "[POST][] /user/" + req.params.id + " data : " + data + " error :" +
+          error,
+      );
     }
   }
 }
