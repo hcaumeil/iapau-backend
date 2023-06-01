@@ -2,6 +2,7 @@ import {
   KeyPair,
   middleware,
   PrivateKey,
+  biscuit
 } from "../node_modules/@biscuit-auth/biscuit-wasm/module/biscuit.js";
 import * as dotenv from "dotenv";
 
