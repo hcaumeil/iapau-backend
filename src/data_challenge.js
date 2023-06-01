@@ -42,18 +42,23 @@ class DataChallengeController {
         );
         if (result.rowCount > 0) {
           res.status(200).send("Data challenge created");
-          console.log("[POST][200] /user  data : " + await request.body);
+          console.log(
+            "[POST][200] /user  data : " + JSON.stringify(await request.body),
+          );
         } else {
           res.status(400).send("Invalid informations");
-          console.log("[POST][400] /user  data : " + await request.body);
+          console.log(
+            "[POST][400] /user  data : " + JSON.stringify(await request.body),
+          );
         }
       }
     } catch (error) {
       res.status(500).send("Informations not valid");
 
       console.log(
-        "[POST][500] /user/" + req.params.id + " data : " + data + " error : " +
-          error,
+        "[POST][500] /user/" + JSON.stringify(req.params.id) + " data : " +
+          JSON.stringify(data) + " error : " +
+          JSON.stringify(error),
       );
     }
   }

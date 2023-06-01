@@ -127,16 +127,18 @@ class UsersController {
         const result = await pg_client.query(query);
         if (result.rowCount > 0) {
           res.status(200).send(JSON.stringify("User modified"));
-          console.log("[POST][200] /user/" + req.params.id + " data : " + data);
+          console.log("[POST][200] /user/" + JSON.stringify(req.params.id) + " data : " + JSON.stringify(data));
         } else {
           res.status(400).send("Informations not valid");
-          console.log("[POST][400] /user/" + req.params.id + " data : " + data);
+          console.log("[POST][400] /user/" + JSON.stringify(req.params.id) + " data : " + JSON.stringify(data));
         }
       }
     } catch (error) {
       console.log(
-        "[POST][] /user/" + req.params.id + " data : " + data + " error :" +
-          error,
+        "[POST][] /user/" + JSON.stringify(req.params.id) + " data : " +
+          JSON.stringify(data) +
+          " error :" +
+          JSON.stringify(error),
       );
     }
   }
