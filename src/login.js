@@ -37,6 +37,7 @@ class LoginController {
         );
       }
     } catch (error) {
+      console.log("[POST][500] /login error : " + error);
       res.status(500).send("Informations not valid");
     }
   }
