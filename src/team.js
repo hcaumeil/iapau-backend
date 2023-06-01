@@ -28,13 +28,13 @@ class TeamController {
 
   async post(request, res) {
     try {
-      const { name } = await request.body;
-      if (!name) {
+      const { name, id_users , id_subject } = await request.body;
+      if (!name || !id_subject || id_users) {
         res.status(401).send("Informations not valid");
       } else {
         const result = await pg_client.query(
-          "INSERT INTO team (name, archived) VALUES ($1, $2)",
-          [name, false],
+          "INSERT INTO team (name, id_users, id_subject) VALUES ($1, $2, $3)",
+          [name, id_users.join(";"), id_subject],
         );
         if (result.rowCount > 0) {
           res.status(200).send("Team created");
