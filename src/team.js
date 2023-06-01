@@ -2,8 +2,7 @@ import { Router } from "express";
 import pg_client from "./pg.js";
 
 import { authorizer } from "@biscuit-auth/biscuit-wasm";
-import biscuit_md from "./auth.js"
-
+import biscuit_md from "./auth.js";
 
 class TeamController {
   static path = "/team";
@@ -11,7 +10,11 @@ class TeamController {
 
   constructor() {
     this.router = new Router();
-    this.router.get(TeamController.path, biscuit_md((req) => authorizer`allow if true);`) , this.get);
+    this.router.get(
+      TeamController.path,
+      biscuit_md((req) => authorizer`allow if true);`),
+      this.get,
+    );
     this.router.post(TeamController.path, this.post);
   }
 
@@ -28,7 +31,7 @@ class TeamController {
 
   async post(request, res) {
     try {
-      const { name, id_users , id_subject } = await request.body;
+      const { name, id_users, id_subject } = await request.body;
       if (!name || !id_subject || id_users) {
         res.status(401).send("Informations not valid");
       } else {
@@ -38,11 +41,22 @@ class TeamController {
         );
         if (result.rowCount > 0) {
           res.status(200).send("Team created");
+
+          console.log(
+            "[POST][200] /team data : " + JSON.stringify(await request.body),
+          );
         } else {
-          res.status(401).send("Informations not valid");
+          console.log(
+            "[POST][400] /subject data : " + JSON.stringify(await request.body),
+          );
+          res.status(400).send("Informations not valid");
         }
       }
     } catch (error) {
+      console.log(
+        "[POST][500] /subject data : " + JSON.stringify(await request.body) +
+          " error : " + JSON.stringify(error),
+      );
       res.status(500).send("Informations not valid");
     }
   }
