@@ -7,7 +7,7 @@
   "scripts": {
     "install": "./front.sh",
     "start": "node --experimental-modules --experimental-wasm-modules src/index.js",
-    "docker": "sleep 40 && npm run db && npm run start",
+    "docker": "sleep 10 && npm run db && npm run start",
     "db": "PGPASSWORD=${PG_PASSWORD} psql -d ${PG_DATABASE} -U ${PG_USER} -p ${PG_PORT} -h ${PG_HOST} -a -f migrations/iapau.sql"
   },
   "author": "",
