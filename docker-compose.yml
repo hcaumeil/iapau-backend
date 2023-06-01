@@ -1,12 +1,19 @@
 
 version: '3.8'
+networks: 
+  reso:
+    driver: bridge
 services:
   app:
     build: .
     depends_on:
       - postgres
+    links:
+      - postgres
     ports:
       - "8080:8080"
+    networks:
+      - reso
   postgres:
     image: postgres:14.1-alpine
     restart: always
@@ -16,3 +23,5 @@ services:
       - POSTGRES_DB=iapau
     ports:
       - "5432:5432"
+    networks:
+      - reso
