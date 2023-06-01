@@ -14,4 +14,12 @@ const biscuit_middleware = middleware({
   publicKey: root.getPublicKey(),
 });
 
+export function biscuit_gen(user, role) {
+  const biscuitBuilder = biscuit`user(${user}); role(${role})`;
+  const token = biscuitBuilder
+    .build(root.getPrivateKey()); // biscuit token
+
+  return token.toBase64();
+}
+
 export default biscuit_middleware;
