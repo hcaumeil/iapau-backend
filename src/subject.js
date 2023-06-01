@@ -11,11 +11,10 @@ class SubjectController {
   constructor() {
     this.router = new Router();
     this.router.get(
-      TeamController.path,
-      biscuit_md((req) => authorizer`allow if true);`),
+      SubjectController.path,
       this.get,
     );
-    this.router.post(TeamController.path, this.post);
+    this.router.post(SubjectController.path, this.post);
   }
 
   async get(req, res) {

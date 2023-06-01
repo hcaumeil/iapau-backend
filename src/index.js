@@ -4,13 +4,15 @@ import DataChallengeController from "./data_challenge.js";
 import UsersController from "./users.js";
 import DataProjectController from "./data_project.js";
 import LoginController from "./login.js";
+import SubjectController from "./subject.js"
 
 const controllers = [
   new UsersController(),
   new TeamController(),
   new DataChallengeController(),
   new DataProjectController(),
-  new LoginController()
+  new LoginController(),
+  new SubjectController()
 ];
 
 const app = new App(
