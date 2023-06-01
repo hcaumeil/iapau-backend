@@ -1,11 +1,13 @@
 import {
+  biscuit,
   KeyPair,
   middleware,
   PrivateKey,
-  biscuit
 } from "../node_modules/@biscuit-auth/biscuit-wasm/module/biscuit.js";
 import * as dotenv from "dotenv";
+import { webcrypto } from "node:crypto";
 
+globalThis.crypto = webcrypto;
 dotenv.config();
 
 const pk = process.env.BISCUIT_KEY;
