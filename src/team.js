@@ -12,7 +12,7 @@ class TeamController {
     this.router = new Router();
     this.router.get(
       TeamController.path,
-      biscuit_md((req) => authorizer`allow if true);`),
+      biscuit_md((req) => authorizer`allow if true;`),
       this.get,
     );
     this.router.post(TeamController.path, this.post);
